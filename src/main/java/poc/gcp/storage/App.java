@@ -12,13 +12,18 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 
 public class App {
 
@@ -53,10 +58,35 @@ public class App {
 
     String credentialFile = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
 
+//    GoogleCredentials credentials = null;
+//    File credentialsPath = new File(credentialFile);
+//    try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+//      credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
+//    } catch (FileNotFoundException e) {
+//      e.printStackTrace();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+
     GoogleCredentials credentials = null;
     File credentialsPath = new File(credentialFile);
     try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
-      credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
+
+      // Convert to String
+      String text = null;
+      try (final Reader reader = new InputStreamReader(serviceAccountStream)) {
+        text = CharStreams.toString(reader);
+      }
+
+      System.out.println(text);
+
+      // String to InputStream
+      InputStream is = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+
+
+      // Create credential
+      credentials = ServiceAccountCredentials.fromStream(is);
+
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
