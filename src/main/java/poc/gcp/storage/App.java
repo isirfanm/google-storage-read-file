@@ -1,5 +1,7 @@
 package poc.gcp.storage;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Acl.Role;
@@ -11,6 +13,10 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.channels.Channels;
 
@@ -44,9 +50,23 @@ public class App {
 
   // Read using access key of second service account
   private static void readFile() {
+
+    String credentialFile = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+
+    GoogleCredentials credentials = null;
+    File credentialsPath = new File(credentialFile);
+    try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+      credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
     // Instantiates a client
     Storage storage = StorageOptions.newBuilder()
         .setProjectId(PROJECT_ID)
+        .setCredentials(credentials)
         .build()
         .getService();
 
