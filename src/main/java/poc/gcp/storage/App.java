@@ -2,8 +2,6 @@ package poc.gcp.storage;
 
 import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Acl;
-import com.google.cloud.storage.Acl.Entity;
-import com.google.cloud.storage.Acl.Entity.Type;
 import com.google.cloud.storage.Acl.Role;
 import com.google.cloud.storage.Acl.User;
 import com.google.cloud.storage.Blob;
@@ -28,6 +26,7 @@ public class App {
 //    givePermission();
   }
 
+  // create bucket using access key of first service account
   private static void createBucket() {
     // Instantiates a client
     Storage storage = StorageOptions.newBuilder()
@@ -43,6 +42,7 @@ public class App {
 
   }
 
+  // Read using access key of second service account
   private static void readFile() {
     // Instantiates a client
     Storage storage = StorageOptions.newBuilder()
@@ -61,6 +61,7 @@ public class App {
     bfr.lines().forEach(s -> System.out.println(s));
   }
 
+  // give permission using access key of first service account
   private static void givePermission() {
     // Instantiates a client
     Storage storage = StorageOptions.newBuilder()
